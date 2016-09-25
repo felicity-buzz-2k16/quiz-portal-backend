@@ -27,11 +27,21 @@ router.post('/check/:qno(\\d+)?', middleware.isAuthenticated, (req, res) => {
   models.Question.findOne({where : { qno }})
     .then(question => {
       if (question) {
-        if (question.answer == answer && qno ==lastQuestionAllowed)
-          req.user.update({ score: score + config.scoreIncrementor, lastQuestionAllowed: lastQuestionAllowed + 1 });
-        else if (question.answer != answer && qno == lastQuestionAllowed)
+        var possibleAnswers = JSON.parse(question.answer);
+        console.log(possibleAnswers);
+        var noOfAnswer = possibleAnswers.length;
+        for (var i = 0; i < noOfAnswer; i++){
+          var re = new RegExp('^'+possibleAnswers[i]+'$');
+          if (re.test(answer)){
+            if(qno == lastQuestionAllowed){
+              req.user.update({ score: score + config.scoreIncrementor, lastQuestionAllowed: lastQuestionAllowed + 1 });
+            }
+            res.send({result: true});
+          }
+        }
+        if (qno == lastQuestionAllowed)
           req.user.update({ score: score - config.scoreDecrementor });
-        res.send({result: question.answer == answer});
+        res.send({result: false});
       } else res.sendStatus(400);
     })
 })

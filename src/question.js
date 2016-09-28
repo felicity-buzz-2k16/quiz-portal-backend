@@ -28,11 +28,10 @@ router.post('/check/:qno(\\d+)?', middleware.isAuthenticated, (req, res) => {
     .then(question => {
       if (question) {
         var possibleAnswers = JSON.parse(question.answer);
-        console.log(possibleAnswers);
         var noOfAnswer = possibleAnswers.length;
         for (var i = 0; i < noOfAnswer; i++){
-          var re = new RegExp('^'+possibleAnswers[i]+'$');
-          if (re.test(answer)){
+          var re = new RegExp('^'+possibleAnswers[i].toLowerCase()+'$');
+          if (re.test(answer.toLowerCase())){
             if(qno == lastQuestionAllowed){
               req.user.update({ score: score + config.scoreIncrementor, lastQuestionAllowed: lastQuestionAllowed + 1 });
             }

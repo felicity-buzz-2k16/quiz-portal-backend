@@ -14,7 +14,6 @@ var Question = sequelize.define('question', {
   title: {
     type: Sequelize.STRING,
     allowNull: false,
-    unique: true,
     validate: {
       notEmpty: true,
     }

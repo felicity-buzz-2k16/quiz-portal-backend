@@ -17,7 +17,6 @@ router.use(require('cookie-parser')());
 router.use(require('body-parser').urlencoded({ extended: true }));
 
 // Route "groups" (kinda controllers)
-router.use('/auth', require('./auth'))
 router.use('/question', require('./question'))
 router.get('/scoreboard',require('./scoreboard'))
 

@@ -36,6 +36,7 @@ router.post('/check/:qno(\\d+)?', middleware.isAuthenticated, (req, res) => {
               req.user.update({ score: score + config.scoreIncrementor, lastQuestionAllowed: lastQuestionAllowed + 1, scoreUpdated: Date.now() });
             }
             res.send({result: true});
+            return;
           }
         }
         if (qno == lastQuestionAllowed)

@@ -2,7 +2,7 @@ var models = require('./models');
 
 var lastUpdated, lastScoreboard;
 module.exports = function (req, res, next){
-  if (lastScoreboard && lastUpdated - Date.now() <= 25*1000) {
+  if (lastScoreboard && Date.now() - lastUpdated <= 25*1000) {
     res.send(lastScoreboard);
     return;
   }

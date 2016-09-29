@@ -33,7 +33,7 @@ router.post('/check/:qno(\\d+)?', middleware.isAuthenticated, (req, res) => {
           var re = new RegExp('^'+possibleAnswers[i].toLowerCase()+'$');
           if (re.test(answer.toLowerCase())){
             if(qno == lastQuestionAllowed){
-              req.user.update({ score: score + config.scoreIncrementor, lastQuestionAllowed: lastQuestionAllowed + 1 });
+              req.user.update({ score: score + config.scoreIncrementor, lastQuestionAllowed: lastQuestionAllowed + 1, scoreUpdated: Date.now() });
             }
             res.send({result: true});
           }

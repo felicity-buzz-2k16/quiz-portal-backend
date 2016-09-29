@@ -33,6 +33,11 @@ var User = sequelize.define('user', {
     type: Sequelize.INTEGER,
     allowNull: false,
     defaultValue: 0
+  },
+  scoreUpdated: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    defaultValue: 0
   }
 });
 

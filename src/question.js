@@ -28,7 +28,7 @@ router.post('/check/:qno(\\d+)?', middleware.isAuthenticated, (req, res) => {
     .then(question => {
       if (question) {
         if (question.answer == answer && qno ==lastQuestionAllowed)
-          req.user.update({ score: score + config.scoreIncrementor, lastQuestionAllowed: lastQuestionAllowed + 1 });
+          req.user.update({ score: score + config.scoreIncrementor, lastQuestionAllowed: lastQuestionAllowed + 1, scoreUpdated: Date.now() });
         else if (question.answer != answer && qno == lastQuestionAllowed)
           req.user.update({ score: score - config.scoreDecrementor });
         res.send({result: question.answer == answer});

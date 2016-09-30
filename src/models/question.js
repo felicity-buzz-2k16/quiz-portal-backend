@@ -1,6 +1,5 @@
 var Sequelize = require('sequelize');
 var sequelize = require('./dbconfig');
-
 var Question = sequelize.define('question', {
   qno: {
     type: Sequelize.INTEGER,
@@ -38,8 +37,17 @@ var Question = sequelize.define('question', {
     allowNull: false,
     validate: {
       notEmpty: true,
+      isInt: true,
+    }
+  },
+  unlock_points: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    validate: {
+      notEmpty: true,
+      isInt: true,
     }
   }
 });
 
-module.exports = Question
+module.exports = Question;

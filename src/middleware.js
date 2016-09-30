@@ -9,7 +9,7 @@ function createUserIfNot (email, name, cb) {
 function isAuthenticated (req, res, next) {
   var email = req.get('SSO-Email');
   var name = req.get('SSO-Name');
-  if (!email) res.sendStatus(403);
+  if (!email) { res.sendStatus(403); return }
   createUserIfNot(email, name, function (err, user) {
     if (err) {
       next(err);
@@ -25,7 +25,7 @@ function isAuthenticated (req, res, next) {
 function isNotAuthenticated (req, res, next) {
   var email = req.get('SSO-Email');
   var name = req.get('SSO-Name');
-  if (!email) next();
+  if (!email) { next(); return }
   createUserIfNot(email, name, function (err, user) {
     if (err) {
       next(err);
@@ -40,7 +40,7 @@ function isNotAuthenticated (req, res, next) {
 function maybeAuthenticated (req, res, next) {
   var email = req.get('SSO-Email');
   var name = req.get('SSO-Name');
-  if (!email) next();
+  if (!email) { next(); return }
   createUserIfNot(email, name, function (err, user) {
     if (err) {
       next(err);

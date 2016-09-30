@@ -23,7 +23,10 @@ router.get('/:qno(\\d+)?', middleware.isAuthenticated, (req, res) => {
 });
 
 router.post('/check/:qno(\\d+)?', middleware.isAuthenticated, (req, res) => {
-  if (Date.now() - req.user.lastWrongAnswer <= 30*1000) { res.sendStatus(406); return }
+  if (Date.now() - req.user.lastWrongAnswer <= 30*1000) {
+    res.status(406).send({ wait: (Date.now() - req.user.lastWrongAnswer) / 1000} );
+    return
+  }
   var { qno } = req.params;
   const { answer } = req.body;
   const { lastQuestionAllowed } = req.user;

@@ -10,13 +10,6 @@ var User = sequelize.define('user', {
       isEmail: true
     }
   },
-  password: {
-    type: Sequelize.STRING,
-    allowNull: false,
-    validate: {
-      notEmpty: true
-    }
-  },
   name: {
     type: Sequelize.STRING,
     allowNull: false,

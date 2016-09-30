@@ -1,23 +1,16 @@
-var jwt = require('jsonwebtoken');
-var config = require('./config');
 var models = require('./models');
 
-function jwtToUser (token, done) {
-  jwt.verify(token, config.secret, function(err, decoded) {
-    if (!decoded) {done(null, false); return;}
-    models.User.findById(decoded.sub, {attributes: {exclude: ['password']}}).then(user => {
-      if (user) {
-        done(null, user);
-      } else {
-        done(null, false);
-      }
-    }).catch(err => done(err));
-  })
+function createUserIfNot (email, name, cb) {
+  models.User.findOrCreate({where : { email }, defaults: { name }})
+    .then(user => cb(null, user[0]))
+    .catch(cb)
 }
 
 function isAuthenticated (req, res, next) {
-  var token = req.header('Authorization');
-  jwtToUser (token, function (err, user) {
+  var email = req.get('SSO-Email');
+  var name = req.get('SSO-Name');
+  if (!email) res.sendStatus(403);
+  createUserIfNot(email, name, function (err, user) {
     if (err) {
       next(err);
     } else if (!user) {
@@ -30,21 +23,25 @@ function isAuthenticated (req, res, next) {
 }
 
 function isNotAuthenticated (req, res, next) {
-  var token = req.header('Authorization');
-  jwtToUser (token, function (err, user) {
+  var email = req.get('SSO-Email');
+  var name = req.get('SSO-Name');
+  if (!email) next();
+  createUserIfNot(email, name, function (err, user) {
     if (err) {
       next(err);
-    } else if (user) {
-      res.sendStatus(403);
-    } else {
+    } else if (!user) {
       next();
+    } else {
+      res.sendStatus(403)
     }
   })
 }
 
 function maybeAuthenticated (req, res, next) {
-  var token = req.header('Authorization');
-  jwtToUser (token, function (err, user) {
+  var email = req.get('SSO-Email');
+  var name = req.get('SSO-Name');
+  if (!email) next();
+  createUserIfNot(email, name, function (err, user) {
     if (err) {
       next(err);
     } else {
@@ -55,7 +52,6 @@ function maybeAuthenticated (req, res, next) {
 }
 
 module.exports = {
-  jwtToUser,
   isAuthenticated,
   isNotAuthenticated,
   maybeAuthenticated

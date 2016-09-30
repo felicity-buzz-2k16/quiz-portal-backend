@@ -35,7 +35,7 @@ var User = sequelize.define('user', {
     defaultValue: 0
   },
   scoreUpdated: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.BIGINT,
     allowNull: false,
     defaultValue: 0
   }

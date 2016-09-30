@@ -32,6 +32,13 @@ var Question = sequelize.define('question', {
     validate: {
       notEmpty: true,
     }
+  },
+  points: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    validate: {
+      notEmpty: true,
+    }
   }
 });
 

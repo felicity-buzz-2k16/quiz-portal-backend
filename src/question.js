@@ -1,7 +1,6 @@
 var router = require('express').Router();
 var models = require('./models');
 var middleware = require('./middleware');
-var config = require('./config');
 
 router.get('/:qno(\\d+)?', middleware.isAuthenticated, (req, res) => {
   var { qno } = req.params;
@@ -18,6 +17,7 @@ router.get('/:qno(\\d+)?', middleware.isAuthenticated, (req, res) => {
 });
 
 router.post('/check/:qno(\\d+)?', middleware.isAuthenticated, (req, res) => {
+  if (Date.now() - req.user.lastWrongAnswer <= 30*1000) { res.sendStatus(406); return }
   var { qno } = req.params;
   const { answer } = req.body;
   const { lastQuestionAllowed } = req.user;
@@ -28,9 +28,14 @@ router.post('/check/:qno(\\d+)?', middleware.isAuthenticated, (req, res) => {
     .then(question => {
       if (question) {
         if (question.answer == answer && qno ==lastQuestionAllowed)
-          req.user.update({ score: score + config.scoreIncrementor, lastQuestionAllowed: lastQuestionAllowed + 1, scoreUpdated: Date.now() });
+          req.user.update({
+            score: score + question.points,
+            lastQuestionAllowed: lastQuestionAllowed + 1,
+            scoreUpdated: Date.now(),
+            lastWrongAnswer: 0,
+          });
         else if (question.answer != answer && qno == lastQuestionAllowed)
-          req.user.update({ score: score - config.scoreDecrementor });
+          req.user.update({ lastWrongAnswer: Date.now() });
         res.send({result: question.answer == answer});
       } else res.sendStatus(400);
     })

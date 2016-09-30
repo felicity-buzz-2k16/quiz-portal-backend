@@ -38,6 +38,11 @@ var User = sequelize.define('user', {
     type: Sequelize.BIGINT,
     allowNull: false,
     defaultValue: 0
+  },
+  lastWrongAnswer: {
+    type: Sequelize.BIGINT,
+    allowNull: false,
+    defaultValue: 0
   }
 });
 

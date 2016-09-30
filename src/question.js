@@ -33,6 +33,8 @@ router.post('/check/:qno(\\d+)?', middleware.isAuthenticated, (req, res) => {
   models.Question.findOne({where : { qno }})
   .then(question => {
     if (question) {
+      if ( question.unlock_points > score)
+        {res.status(403).send({points:question.unlock_points});return false;}
       models.Mapping.findOne({where: {qno:qno,uid:uid}}).then(mapping => {
         if(!mapping){
           if (question.answer == answer && question.unlock_points <= score){

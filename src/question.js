@@ -45,15 +45,13 @@ router.post('/check/:qno(\\d+)?', middleware.isAuthenticated, (req, res) => {
             for (var i = 0; i < noOfAnswer; i++){
               var re = new RegExp('^'+possibleAnswers[i].toLowerCase()+'$');
               if (re.test(answer.toLowerCase())){
-                if (question.answer == answer && question.unlock_points <= score){
-                  req.user.update({
-                    score: score + question.points,
-                    lastQuestionAllowed: lastQuestionAllowed + 1,
-                    scoreUpdated: Date.now(),
-                    lastWrongAnswer: 0,
-                  });
-                  models.Mapping.create({qno,uid});
-                }
+                req.user.update({
+                  score: score + question.points,
+                  lastQuestionAllowed: lastQuestionAllowed + 1,
+                  scoreUpdated: Date.now(),
+                  lastWrongAnswer: 0,
+                });
+                models.Mapping.create({qno,uid});
                 res.send({result: true});
                 return;
               }

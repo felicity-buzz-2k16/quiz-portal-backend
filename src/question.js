@@ -34,28 +34,37 @@ router.post('/check/:qno(\\d+)?', middleware.isAuthenticated, (req, res) => {
   const uid = req.user.id
   if (!qno) qno = lastQuestionAllowed;
   models.Question.findOne({where : { qno }})
-  .then(question => {
-    if (question) {
-      if ( question.unlock_points > score)
-        {res.status(403).send({points:question.unlock_points});return false;}
-      models.Mapping.findOne({where: {qno:qno,uid:uid}}).then(mapping => {
-        if(!mapping){
-          if (question.answer == answer && question.unlock_points <= score){
-            req.user.update({
-              score: score + question.points,
-              lastQuestionAllowed: lastQuestionAllowed + 1,
-              scoreUpdated: Date.now(),
-              lastWrongAnswer: 0,
-            });
-            models.Mapping.create({qno,uid});
-          }
-          else if (question.answer != answer && question.unlock_points <= score)
-            req.user.update({ lastWrongAnswer: Date.now() });
-        }
-      })
-      res.send({result: question.answer == answer});
-    } else res.sendStatus(400);
-  })
+    .then(question => {
+      if (question) {
+        if ( question.unlock_points > score)
+          {res.status(403).send({points:question.unlock_points});return false;}
+        models.Mapping.findOne({where: {qno:qno,uid:uid}}).then(mapping => {
+          if(!mapping){
+            var possibleAnswers = JSON.parse(question.answer);
+            var noOfAnswer = possibleAnswers.length;
+            for (var i = 0; i < noOfAnswer; i++){
+              var re = new RegExp('^'+possibleAnswers[i].toLowerCase()+'$');
+              if (re.test(answer.toLowerCase())){
+                if (question.answer == answer && question.unlock_points <= score){
+                  req.user.update({
+                    score: score + question.points,
+                    lastQuestionAllowed: lastQuestionAllowed + 1,
+                    scoreUpdated: Date.now(),
+                    lastWrongAnswer: 0,
+                  });
+                  models.Mapping.create({qno,uid});
+                }
+                res.send({result: true});
+                return;
+              }
+            }
+            if (qno == lastQuestionAllowed)
+              req.user.update({ lastWrongAnswer: Date.now() });
+            res.send({result: false});
+          } else res.sendStatus(400);
+        })
+      }
+    })
 })
 
 module.exports = router;
